@@ -943,9 +943,15 @@ def print_mutation(results, hyp, save_dir, bucket, prefix=colorstr('evolve: ')):
             os.system(f'gsutil cp {url} {save_dir}')  # download evolve.csv if larger than local
 
     # Log to evolve.csv
-    s = '' if evolve_csv.exists() else (('%20s,' * n % keys).rstrip(',') + '\n')  # add header
+    #s = '' if evolve_csv.exists() else (('%20s,' * n % keys).rstrip(',') + '\n')  # add header
+    #with open(evolve_csv, 'a') as f:
+    #    f.write(s + ('%20.5g,' * n % vals).rstrip(',') + '\n')
+
+    # Log to evolve.csv
+    #Fix mismatch between the number of placeholders and values provided in the format string:
+    s = '' if evolve_csv.exists() else f"{'%20s,' * n % keys}\n"
     with open(evolve_csv, 'a') as f:
-        f.write(s + ('%20.5g,' * n % vals).rstrip(',') + '\n')
+        f.write(f"{s}{'%20.5g,' * n % vals}\n")    
 
     # Save yaml
     with open(evolve_yaml, 'w') as f:
