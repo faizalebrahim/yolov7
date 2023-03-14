@@ -930,7 +930,7 @@ def strip_optimizer(f='best.pt', s=''):  # from utils.general import *; strip_op
 def print_mutation(results, hyp, save_dir, bucket, prefix=colorstr('evolve: ')):
     evolve_csv = save_dir / 'evolve.csv'
     evolve_yaml = save_dir / 'hyp_evolve.yaml'
-    keys = ('metrics/precision', 'metrics/recall', 'metrics/mAP_0.5', 'metrics/mAP_0.5:0.95', 'val/box_loss',
+    keys = ('epoch','train/box_loss','train/seg_loss','train/obj_loss','train/cls_loss','metrics/precision', 'metrics/recall', 'metrics/mAP_0.5', 'metrics/mAP_0.5:0.95', 'val/box_loss',
             'val/obj_loss', 'val/cls_loss') + tuple(hyp.keys())  # [results + hyps]
     keys = tuple(x.strip() for x in keys)
     vals = results + tuple(hyp.values())
@@ -943,15 +943,10 @@ def print_mutation(results, hyp, save_dir, bucket, prefix=colorstr('evolve: ')):
             os.system(f'gsutil cp {url} {save_dir}')  # download evolve.csv if larger than local
 
     # Log to evolve.csv
-    #s = '' if evolve_csv.exists() else (('%20s,' * n % keys).rstrip(',') + '\n')  # add header
-    #with open(evolve_csv, 'a') as f:
-    #    f.write(s + ('%20.5g,' * n % vals).rstrip(',') + '\n')
-
-    # Log to evolve.csv
-    #Fix mismatch between the number of placeholders and values provided in the format string:
-    s = '' if evolve_csv.exists() else f"{'%20s,' * n % keys}\n"
+    s = '' if evolve_csv.exists() else (('%20s,' * n % keys).rstrip(',') + '\n')  # add header
     with open(evolve_csv, 'a') as f:
-        f.write(f"{s}{'%20.5g,' * n % vals}\n")    
+        f.write(s + ('%20.5g,' * n % vals).rstrip(',') + '\n')
+
 
     # Save yaml
     with open(evolve_yaml, 'w') as f:
